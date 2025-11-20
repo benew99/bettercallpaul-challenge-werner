@@ -23,7 +23,7 @@ public class CsvTableReader implements TableReader {
         try (BufferedReader br = new BufferedReader(reader)) {
             List<String[]> rows = new ArrayList<>();
 
-            // Header überspringen
+            // Skip header
             String header = br.readLine();
             if (header == null) {
                 return rows;
