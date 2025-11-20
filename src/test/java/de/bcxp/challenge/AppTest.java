@@ -1,25 +1,31 @@
 package de.bcxp.challenge;
 
-import org.junit.jupiter.api.BeforeEach;
+import de.bcxp.challenge.io.CsvTableReader;
 import org.junit.jupiter.api.Test;
+
+import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Example JUnit 5 test case.
+ * Unit test for the weather calculation logic.
  */
 class AppTest {
 
-    private String successLabel = "not successful";
-
-    @BeforeEach
-    void setUp() {
-        successLabel = "successful";
-    }
-
     @Test
-    void aPointlessTest() {
-        assertEquals("successful", successLabel, "My expectations were not met");
-    }
+    void solveWeather_returnsDayWithSmallestTemperatureSpread() throws Exception {
 
+        String csv =
+                "Day,MxT,MnT\n" +
+                "1,88,59\n" +
+                "2,79,63\n" +
+                "3,77,55\n";
+
+        String result = App.solveWeather(
+                new StringReader(csv),
+                new CsvTableReader(',')
+        );
+
+        assertEquals("2", result);
+    }
 }
