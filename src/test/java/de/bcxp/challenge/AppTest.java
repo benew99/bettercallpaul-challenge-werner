@@ -8,7 +8,7 @@ import java.io.StringReader;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit test for the weather calculation logic.
+ * Unit tests for the weather and density calculation logic.
  */
 class AppTest {
 
