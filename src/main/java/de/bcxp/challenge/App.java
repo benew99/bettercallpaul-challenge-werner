@@ -1,14 +1,28 @@
 package de.bcxp.challenge;
 
-import java.io.BufferedReader;
+import de.bcxp.challenge.io.CsvTableReader;
+import de.bcxp.challenge.io.TableReader;
+import de.bcxp.challenge.weather.WeatherAnalyzer;
+import de.bcxp.challenge.weather.WeatherDay;
+
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The entry class for your solution. This class is only aimed as starting point and not intended as baseline for your software
  * design. Read: create your own classes and packages as appropriate.
  */
 public final class App {
+
+    private static final String WEATHER_RESOURCE_PATH = "/de/bcxp/challenge/weather.csv";
+
+    private App() {
+        // prevent instantiation
+    }
 
     /**
      * This is the main entry method of your program.
@@ -27,47 +41,48 @@ public final class App {
     }
 
     /**
-     * Naive implementation: reads weather.csv directly and computes
-     * the day with the smallest temperature spread.
+     * Reads the weather data from the CSV file and determines 
+     * the day with the smallest temperature range.
      */
-    private static String solveWeather() {
+    public static String solveWeather() {
 
-        int bestDay = -1;
-        int smallestSpread = Integer.MAX_VALUE;
-
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(
-                        App.class.getResourceAsStream("/de/bcxp/challenge/weather.csv"),
-                        StandardCharsets.UTF_8))) {
-
-            // Skip header line
-            String line = br.readLine();
-
-            while ((line = br.readLine()) != null) {
-
-                if (line.isBlank()) {
-                    continue;
-                }
-
-                String[] columns = line.split(",");
-
-                int day = Integer.parseInt(columns[0].trim());
-                int maxTemp = Integer.parseInt(columns[1].trim());
-                int minTemp = Integer.parseInt(columns[2].trim());
-
-                int spread = maxTemp - minTemp;
-
-                if (spread < smallestSpread) {
-                    smallestSpread = spread;
-                    bestDay = day;
-                }
+        try {
+            InputStream inputStream = App.class.getResourceAsStream(WEATHER_RESOURCE_PATH);
+            if (inputStream == null) {
+                System.err.println("Could not find resource: " + WEATHER_RESOURCE_PATH);
+                return "error";
             }
+
+            TableReader tableReader = new CsvTableReader(',');
+
+            List<String[]> rows = tableReader.readAll(
+                    new InputStreamReader(inputStream, StandardCharsets.UTF_8)
+            );
+
+            List<WeatherDay> days = rows.stream()
+                    .map(App::mapToWeatherDay)
+                    .collect(Collectors.toList());
+
+            WeatherAnalyzer analyzer = new WeatherAnalyzer();
+            Optional<WeatherDay> result = analyzer.findDayWithSmallestTemperatureSpread(days);
+
+            return result.map(day -> Integer.toString(day.getDay()))
+                    .orElse("no data");
 
         } catch (Exception e) {
             System.err.println("Error while processing weather data: " + e.getMessage());
             return "error";
         }
+    }
 
-        return bestDay == -1 ? "no data" : Integer.toString(bestDay);
+    /**
+     * Mapping of a CSV row (string array) to the domain object WeatherDay.
+     * Expects column order: Day, MxT, MnT. ...
+     */
+    private static WeatherDay mapToWeatherDay(String[] columns) {
+        int day = Integer.parseInt(columns[0].trim());
+        int maxTemp = Integer.parseInt(columns[1].trim());
+        int minTemp = Integer.parseInt(columns[2].trim());
+        return new WeatherDay(day, maxTemp, minTemp);
     }
 }
