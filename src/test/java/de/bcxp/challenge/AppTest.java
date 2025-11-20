@@ -17,7 +17,7 @@ class AppTest {
 
         String csv =
                 "Day,MxT,MnT\n" +
-                "1,20,5\n" +
+                "1,-5,-20\n" +
                 "2,12,10\n" +
                 "3,30,20\n";
 

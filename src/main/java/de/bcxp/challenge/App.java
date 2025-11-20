@@ -1,6 +1,5 @@
 package de.bcxp.challenge;
 
-//import de.bcxp.challenge.io.CsvTableReader;
 import de.bcxp.challenge.io.TableReaderFactory;
 import de.bcxp.challenge.io.TableReader;
 import de.bcxp.challenge.weather.WeatherAnalyzer;
@@ -55,6 +54,7 @@ public final class App {
 
             // Countries analysis
             InputStream countryStream = App.class.getResourceAsStream(COUNTRIES_RESOURCE_PATH);
+            
             if (countryStream == null) {
                 System.err.println("Could not find resource: " + COUNTRIES_RESOURCE_PATH);
                 return;
@@ -75,7 +75,6 @@ public final class App {
 
     /**
      * Core weather analysis logic.
-     * This method is completely independent from file locations or resource handling.
      *
      * @param reader source of tabular data
      * @param tableReader strategy used to parse the data
@@ -108,9 +107,8 @@ public final class App {
     }
 
 
-        /**
+    /**
      * Core countries analysis logic.
-     * This method is completely independent from file locations or resource handling.
      *
      * @param reader source of tabular data
      * @param tableReader strategy used to parse the data
@@ -151,7 +149,7 @@ public final class App {
         String normalized = value.trim();
 
         // Example: "4.036.355,00" -> "4036355"
-        // Cut off decimal part if present (everything after comma)
+        // Cut off decimal part if present
         if (normalized.contains(",")) {
             normalized = normalized.substring(0, normalized.indexOf(","));
         }
@@ -159,16 +157,15 @@ public final class App {
         // Remove thousand separators
         normalized = normalized.replace(".", "");
 
-    return Long.parseLong(normalized);
-}
+        return Long.parseLong(normalized);
+    }
 
 
     private static double parseArea(String value) {
         // Example values are simple integers like "83855"
-        // but we still strip thousand separators just in case
+        // strip thousand separators just in case
         String normalized = value.replace(".", "").replace(",", ".").trim();
         return Double.parseDouble(normalized);
     }
-
 
 }
