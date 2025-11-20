@@ -1,6 +1,7 @@
 package de.bcxp.challenge;
 
-import de.bcxp.challenge.io.CsvTableReader;
+//import de.bcxp.challenge.io.CsvTableReader;
+import de.bcxp.challenge.io.TableReaderFactory;
 import de.bcxp.challenge.io.TableReader;
 import de.bcxp.challenge.weather.WeatherAnalyzer;
 import de.bcxp.challenge.weather.WeatherDay;
@@ -53,7 +54,9 @@ public final class App {
                 return "error";
             }
 
-            TableReader tableReader = new CsvTableReader(',');
+            //TableReader tableReader = new CsvTableReader(',');
+            TableReader tableReader = TableReaderFactory.forResource(WEATHER_RESOURCE_PATH);
+
 
             List<String[]> rows = tableReader.readAll(
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8)
