@@ -252,12 +252,23 @@ This results in:
 * Deterministic results
 * No external dependencies
 
+== Running the project
+
+Build & test the project::
+mvn verify
+
+Run the main application (de.bcxp.challenge.App)::
+mvn exec:java
+
 
 == Possible Future Improvements
 
 * Add JSONTableReader implementation
-* Introduce generic row-to-object mapping abstraction
-* Add logging framework
+* Extract CSV row mapping (and parsing) into dedicated mapper classes (e.g. WeatherRowMapper, CountryRowMapper)
+* Introduce a generic Analyzer<T, R> interface for pluggable analysis strategies
+* Introduce structured logging using SLF4J instead of System.err
+* Add dedicated error messages for malformed numeric values
+* Skip invalid rows
 
 == Summary
 
