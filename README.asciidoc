@@ -153,3 +153,119 @@ Ideally you provide your solutions as Git repository with
 appropriate commits and descriptions. If you have a GitLab.com
 or GitHub account, please feel free to publish your solution
 there.
+
+
+
+
+
+
+
+= Solution
+
+This section describes the implemented solution, architecture and design decisions.
+
+== Solution Overview
+
+The solution implements both challenges (Weather and Countries) in a single program and follows a layered and extensible design that emphasises:
+
+* separation of concerns
+* clear domain modelling
+* testability
+* robustness against malformed data
+* extensibility for future data formats
+
+== Architecture
+
+=== Layers
+
+1. IO Layer:
+   - `TableReader` interface
+   - `CsvTableReader` implementation
+   - `TableReaderFactory` 
+   - Responsible only for reading tabular data
+
+2. Domain Layer:
+   - `WeatherDay`
+   - `Country`
+   - Pure data representation
+
+3. Analysis Layer:
+   - `WeatherAnalyzer`
+   - `CountryAnalyzer`
+   - Contains business logic
+
+4. Composition Root:
+   - `App`
+   - Orchestrates dependencies and execution flow
+
+== Key Design Decisions
+
+=== TableReader Interface
+A generic `TableReader` abstraction to decouple file format from business logic.
+
+Benefits::
+* Allows easy support for JSON, XML or API-based data sources
+* Improves testability
+* Follows Dependency Inversion Principle
+
+=== Factory Pattern
+`TableReaderFactory` selects the correct reader based on resource path.
+
+Benefits::
+* Centralised instantiation logic
+* Open for extension without modifying core logic
+* Clean separation of creation and usage
+
+=== Country & Weather Separation
+Each problem domain has its own:
+
+* Domain model
+* Analyzer
+* Parsing logic
+
+This increases clarity and reduces unintended coupling.
+
+== Parsing Strategy
+
+Special care was taken to handle real-world data formats, for example european number notation:
+
+[source]
+----
+4.036.355,00 → 4036355
+----
+
+This ensures robustness against localization differences and malformed data.
+
+== Unit Testing Strategy
+
+Core logic is tested independently of file IO using `StringReader`.
+
+[source,java]
+----
+App.solveWeather(new StringReader(csv), new CsvTableReader(','));
+App.solveCountries(new StringReader(csv), new CsvTableReader(';'));
+----
+
+This results in:
+
+* Fast execution
+* Deterministic results
+* No external dependencies
+
+
+== Possible Future Improvements
+
+* Add JSONTableReader implementation
+* Introduce generic row-to-object mapping abstraction
+* Add logging framework
+
+== Summary
+
+The solution fulfills all requested objectives by providing:
+
+* a single program solving both tasks
+* clean architecture
+* extensible design
+* well-tested core logic
+* future-proof structure
+
